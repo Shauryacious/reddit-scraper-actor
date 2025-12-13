@@ -5,6 +5,8 @@ Scrapes Reddit posts, comments, and threads from subreddits using Reddit's publi
 No authentication required. Challenge-compliant for Apify $1M Challenge.
 
 Based on TradeX reddit_service.py implementation, adapted for Apify platform.
+
+Last updated: 2024
 """
 
 import asyncio
