@@ -309,10 +309,21 @@ For additional security, you can set up environment protection rules:
 
 The CD workflow requires the following permissions (configured in `.github/workflows/cd.yml`):
 
+### build-and-push Job
+
 | Permission | Purpose | Required For |
 |------------|---------|--------------|
 | `contents: read` | Read repository code | Checking out code |
 | `packages: write` | Push Docker images | Pushing to Docker Hub |
+
+### security-scan Job
+
+| Permission | Purpose | Required For |
+|------------|---------|--------------|
+| `contents: read` | Read repository code | Checking out code |
+| `security-events: write` | Upload security scan results | Uploading SARIF files to GitHub Security |
+
+**Important:** The `security-events: write` permission is required for the CodeQL Action to upload Trivy scan results (SARIF format) to GitHub Security. Without this permission, you'll see a "Resource not accessible by integration" error.
 
 These permissions are set at the job level and should work by default for most repositories. If you encounter permission issues:
 

@@ -124,7 +124,13 @@ Follow the instructions in [secrets-setup.md](./secrets-setup.md) to add:
 
 **Jobs:**
 - **build-and-push**: Builds and pushes Docker image
-- **security-scan**: Scans image for vulnerabilities
+- **security-scan**: Scans image for vulnerabilities using Trivy and uploads results to GitHub Security
+
+**Security Scanning:**
+- Uses Trivy to scan Docker images for vulnerabilities
+- Generates SARIF format reports
+- Uploads results to GitHub Security (Code Scanning)
+- Requires `security-events: write` permission (configured in workflow)
 
 **Image Tags:**
 - `latest` - Latest main/master branch
@@ -224,6 +230,20 @@ docker run --rm \
 - Verify secret names match exactly (case-sensitive)
 - Check that secrets are set in repository settings
 - Ensure Docker Hub credentials are correct
+
+### Security Scan Upload Fails
+
+**Error:** `Resource not accessible by integration` when uploading SARIF files
+
+**Solutions:**
+- Ensure the workflow has `security-events: write` permission (configured in `cd.yml`)
+- Check that the workflow is not running from a forked repository (forks have limited permissions)
+- Verify the job has the correct permissions block:
+  ```yaml
+  permissions:
+    contents: read
+    security-events: write
+  ```
 
 ## Best Practices
 
