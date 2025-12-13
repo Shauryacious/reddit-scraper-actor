@@ -22,4 +22,3 @@ VALID_TIME_FILTERS = ["hour", "day", "week", "month", "year", "all"]
 
 # Rate Limiting
 DELAY_BETWEEN_SUBREDDITS_SECONDS = 1.0
-

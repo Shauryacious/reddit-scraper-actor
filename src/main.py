@@ -36,7 +36,7 @@ async def scrape_subreddits(
 ) -> List[Dict]:
     """
     Scrape multiple subreddits
-    
+
     Args:
         reddit_service: RedditService instance
         subreddits: List of subreddit names
@@ -45,14 +45,14 @@ async def scrape_subreddits(
         limit: Max posts per subreddit
         include_comments: Whether to fetch comments
         max_comments_per_post: Max comments per post
-        
+
     Returns:
         List of all scraped posts
     """
     all_posts = []
-    
+
     Actor.log.info(f"Scraping {len(subreddits)} subreddit(s)")
-    
+
     for i, subreddit in enumerate(subreddits):
         try:
             posts = await reddit_service.get_posts_from_subreddit(
@@ -61,7 +61,7 @@ async def scrape_subreddits(
                 time_filter=time_filter,
                 limit=limit,
             )
-            
+
             # Fetch comments if requested
             if include_comments:
                 for post in posts:
@@ -72,17 +72,17 @@ async def scrape_subreddits(
                             max_comments=max_comments_per_post,
                         )
                         post["comments"] = comments
-            
+
             all_posts.extend(posts)
-            
+
             # Add delay between subreddits to be respectful
             if i < len(subreddits) - 1:
                 await asyncio.sleep(DELAY_BETWEEN_SUBREDDITS_SECONDS)
-                
+
         except Exception as e:
             Actor.log.error(f"Error scraping subreddit {subreddit}: {e}")
             continue
-    
+
     return all_posts
 
 
@@ -96,7 +96,7 @@ async def search_reddit(
 ) -> List[Dict]:
     """
     Search Reddit for posts
-    
+
     Args:
         reddit_service: RedditService instance
         query: Search query
@@ -104,12 +104,12 @@ async def search_reddit(
         limit: Max results
         include_comments: Whether to fetch comments
         max_comments_per_post: Max comments per post
-        
+
     Returns:
         List of search results
     """
     posts = await reddit_service.search_posts(query=query, sort=sort, limit=limit)
-    
+
     # Fetch comments if requested
     if include_comments:
         for post in posts:
@@ -120,7 +120,7 @@ async def search_reddit(
                     max_comments=max_comments_per_post,
                 )
                 post["comments"] = comments
-    
+
     return posts
 
 
@@ -128,7 +128,7 @@ async def run_scraper(input_data: Dict[str, Any]):
     """Run the scraper logic (without Actor context manager)"""
     # This function is called from main.py which manages the Actor context
     # Get input configuration (already passed as parameter)
-    
+
     # Extract and set defaults
     subreddits = input_data.get("subreddits", [])
     search_query = input_data.get("searchQuery", "")
@@ -137,7 +137,7 @@ async def run_scraper(input_data: Dict[str, Any]):
     limit = input_data.get("limit", DEFAULT_LIMIT)
     include_comments = input_data.get("includeComments", False)
     max_comments_per_post = input_data.get("maxCommentsPerPost", DEFAULT_MAX_COMMENTS)
-    
+
     # Validate input
     try:
         validate_input(input_data)
@@ -145,21 +145,24 @@ async def run_scraper(input_data: Dict[str, Any]):
         Actor.log.error(f"Input validation failed: {e}")
         await Actor.fail(exit_code=1)
         return
-    
-    Actor.log.info("Starting Reddit scraper", {
-        "subreddits": len(subreddits),
-        "searchQuery": search_query or "none",
-        "sortBy": sort_by,
-        "limit": limit,
-        "includeComments": include_comments,
-    })
-    
+
+    Actor.log.info(
+        "Starting Reddit scraper",
+        {
+            "subreddits": len(subreddits),
+            "searchQuery": search_query or "none",
+            "sortBy": sort_by,
+            "limit": limit,
+            "includeComments": include_comments,
+        },
+    )
+
     # Initialize Reddit service
     reddit_service = RedditService()
-    
+
     # Scrape data
     all_posts = []
-    
+
     try:
         # Scrape subreddits if provided
         if subreddits:
@@ -173,7 +176,7 @@ async def run_scraper(input_data: Dict[str, Any]):
                 max_comments_per_post=max_comments_per_post,
             )
             all_posts.extend(posts)
-        
+
         # Search Reddit if query provided
         if search_query:
             search_posts = await search_reddit(
@@ -185,30 +188,37 @@ async def run_scraper(input_data: Dict[str, Any]):
                 max_comments_per_post=max_comments_per_post,
             )
             all_posts.extend(search_posts)
-        
+
         # Save all posts to dataset
         if all_posts:
             Actor.log.info(f"Saving {len(all_posts)} posts to dataset")
-            
+
             for post in all_posts:
                 await Actor.push_data(post)
-            
-            Actor.log.info(f"Successfully scraped and saved {len(all_posts)} Reddit posts")
+
+            Actor.log.info(
+                f"Successfully scraped and saved {len(all_posts)} Reddit posts"
+            )
         else:
             Actor.log.warning("No posts were scraped. Check your input parameters.")
-        
-        # Set summary statistics
-        await Actor.set_value("summary", {
-            "totalPosts": len(all_posts),
-            "subredditsScraped": len(subreddits),
-            "searchQuery": search_query or None,
-            "timestamp": datetime.now().isoformat(),
-        })
-        
-    except Exception as e:
-        Actor.log.error("Fatal error in Reddit scraper", {
-            "error": str(e),
-            "type": type(e).__name__,
-        })
-        await Actor.fail(exit_code=1)
 
+        # Set summary statistics
+        await Actor.set_value(
+            "summary",
+            {
+                "totalPosts": len(all_posts),
+                "subredditsScraped": len(subreddits),
+                "searchQuery": search_query or None,
+                "timestamp": datetime.now().isoformat(),
+            },
+        )
+
+    except Exception as e:
+        Actor.log.error(
+            "Fatal error in Reddit scraper",
+            {
+                "error": str(e),
+                "type": type(e).__name__,
+            },
+        )
+        await Actor.fail(exit_code=1)
