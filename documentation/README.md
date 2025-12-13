@@ -10,6 +10,7 @@ Welcome to the Reddit Scraper Actor documentation. This directory contains compr
 - **[Setup Summary](./getting-started/setup-summary.md)** - Quick reference summary
 
 ### Deployment
+- **[Apify Deployment](./deployment/apify-deployment.md)** - Deploy actor to Apify platform ✅
 - **[CI/CD Setup](./deployment/cicd-setup.md)** - GitHub Actions and CI/CD pipeline
 - **[Secrets Setup](./deployment/secrets-setup.md)** - Configuring GitHub and Docker Hub secrets
 - **[CI/CD Overview](./deployment/ci-cd-overview.md)** - Overview of CI/CD workflows
@@ -30,8 +31,15 @@ Welcome to the Reddit Scraper Actor documentation. This directory contains compr
 
 1. Read the [Setup Guide](./getting-started/setup.md) to get started
 2. Configure [Secrets](./deployment/secrets-setup.md) for CI/CD
-3. Review [Input Schema](./api-reference/input-schema.md) for usage
-4. Check [Learnings](./learnings/) for development insights
+3. Deploy to [Apify Platform](./deployment/apify-deployment.md) ✅
+4. Review [Input Schema](./api-reference/input-schema.md) for usage
+5. Check [Learnings](./learnings/) for development insights
+
+## ✅ Deployment Status
+
+- **GitHub**: ✅ Code pushed and CI/CD configured
+- **Docker Hub**: ✅ Images building and pushing automatically
+- **Apify**: ✅ Actor deployed and live (v1.0)
 
 ## 📖 Documentation Philosophy
 

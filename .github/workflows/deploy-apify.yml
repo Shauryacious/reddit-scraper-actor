@@ -1,0 +1,46 @@
+name: Deploy to Apify
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  deploy:
+    name: Deploy Actor to Apify
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Apify CLI
+        run: npm install -g @apify/cli
+
+      - name: Verify Apify CLI installation
+        run: apify --version
+
+      - name: Deploy to Apify
+        env:
+          APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
+        run: |
+          # Navigate to actor directory if needed
+          if [ -d "reddit-scraper-actor" ]; then
+            cd reddit-scraper-actor
+          fi
+          # Verify we're in the right directory
+          if [ ! -f ".actor/actor.json" ]; then
+            echo "Error: .actor/actor.json not found. Current directory: $(pwd)"
+            ls -la
+            exit 1
+          fi
+          # Deploy to Apify
+          apify push
+

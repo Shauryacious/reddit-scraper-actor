@@ -274,9 +274,10 @@ docker run --rm \
 2. ✅ Configure GitHub secrets
 3. ✅ Create Docker Hub repository
 4. ✅ Push code and verify workflows
-5. 🔄 Monitor CI/CD pipelines
-6. 🔄 Set up branch protection rules (optional)
-7. 🔄 Configure deployment to Apify (optional)
+5. ✅ Deploy to Apify platform (see [Apify Deployment Guide](./apify-deployment.md))
+6. 🔄 Monitor CI/CD pipelines
+7. 🔄 Set up branch protection rules (optional)
+8. 🔄 Configure GitHub integration for auto-deploy (optional)
 
 ## Additional Resources
 

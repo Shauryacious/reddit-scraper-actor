@@ -1,4 +1,4 @@
-# Reddit Scraper Actor
+# Reddit Scraper Gold
 
 A powerful Apify actor that scrapes Reddit posts, comments, and threads from subreddits using Reddit's public API. No authentication required. Challenge-compliant for the Apify $1M Challenge.
 
@@ -157,6 +157,7 @@ Reddit's public API has rate limits. The actor includes delays between requests 
 - **Architecture**: Modular structure with separate services and utilities
 - **Code Quality**: Black formatting, flake8 linting, isort import sorting
 - **Testing**: pytest with coverage reporting
+- **Deployment**: ✅ Deployed to Apify platform
 
 ## Project Structure
 
@@ -242,12 +243,37 @@ isort src/ tests/
 flake8 src/ tests/
 ```
 
+## Deployment
+
+✅ **Successfully Deployed to Apify**
+
+The actor is live on the Apify platform and ready to use:
+
+- **Actor Name**: `reddit-scraper-gold`
+- **Version**: `1.0`
+- **Status**: Active and deployed
+
+### Automatic Deployment
+
+🚀 **Automatic deployment is configured!** Every successful push to the `main` or `master` branch will automatically deploy the actor to Apify.
+
+**Setup Required:**
+1. **Get your Organization API token** from [Apify Console](https://console.apify.com) → Settings → API tokens
+   - ⚠️ **Important:** Use an **Organization API token** (not Personal) if you want the actor deployed under your organization
+2. Add your `APIFY_API_TOKEN` as a GitHub secret (see [Secrets Setup Guide](./documentation/deployment/secrets-setup.md))
+3. Push to `main` or `master` branch
+4. The workflow will automatically deploy your changes to Apify
+
+For manual deployment instructions, see [Apify Deployment Guide](./documentation/deployment/apify-deployment.md).
+
 ## Documentation
 
 Comprehensive documentation is available in the [`documentation/`](./documentation/) directory:
 
 - **[Getting Started](./documentation/getting-started/)** - Setup and installation guides
-- **[Deployment](./documentation/deployment/)** - CI/CD and deployment documentation
+- **[Deployment](./documentation/deployment/)** - CI/CD and Apify deployment documentation
+  - [Apify Deployment Guide](./documentation/deployment/apify-deployment.md) - Deploy to Apify platform
+  - [CI/CD Setup](./documentation/deployment/cicd-setup.md) - GitHub Actions workflows
 - **[Development](./documentation/development/)** - Code formatting and development guidelines
 - **[API Reference](./documentation/api-reference/)** - Input/output specifications
 - **[Learnings](./documentation/learnings/)** - Development insights and best practices

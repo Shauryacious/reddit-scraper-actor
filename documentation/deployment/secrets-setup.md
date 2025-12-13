@@ -9,6 +9,7 @@ This repository uses GitHub Actions for CI/CD with the following workflows:
 - **CI Workflow** (`ci.yml`) - Runs tests and linting (no secrets required)
 - **CD Workflow** (`cd.yml`) - Builds and pushes Docker images (requires Docker Hub secrets)
 - **Docker Build Test** (`docker-build-test.yml`) - Tests Docker builds (no secrets required)
+- **Deploy to Apify** (`deploy-apify.yml`) - Automatically deploys actor to Apify on push (requires Apify API token)
 
 ## Quick Setup Checklist
 
@@ -17,6 +18,9 @@ This repository uses GitHub Actions for CI/CD with the following workflows:
 - [ ] Generate Docker Hub Personal Access Token
 - [ ] Add `DOCKER_USERNAME` secret to GitHub
 - [ ] Add `DOCKER_PASSWORD` secret to GitHub
+- [ ] Create Apify account (if not already created)
+- [ ] Generate Apify API token
+- [ ] Add `APIFY_API_TOKEN` secret to GitHub
 - [ ] Verify workflow runs successfully
 
 ## GitHub Secrets
@@ -45,8 +49,11 @@ These secrets are **required** for the CD workflow to build and push Docker imag
 |------------|-------------|---------|---------------|
 | `DOCKER_USERNAME` | Your Docker Hub username | CD workflow | `your-dockerhub-username` |
 | `DOCKER_PASSWORD` | Your Docker Hub password or access token | CD workflow | `dckr_pat_xxxxxxxxxxxxx` |
+| `APIFY_API_TOKEN` | Your Apify API token | Deploy to Apify workflow | `apify_api_xxxxxxxxxxxxx` |
 
-**Security Recommendation:** Always use a Docker Hub [Personal Access Token](https://docs.docker.com/docker-hub/access-tokens/) instead of your password. Tokens can be revoked without changing your password and provide better security.
+**Security Recommendations:**
+- Always use a Docker Hub [Personal Access Token](https://docs.docker.com/docker-hub/access-tokens/) instead of your password
+- Keep your Apify API token secure and never commit it to the repository
 
 ### Optional Secrets
 
@@ -55,7 +62,6 @@ These secrets are optional and only needed for specific features:
 | Secret Name | Description | Used By | When Needed |
 |------------|-------------|---------|-------------|
 | `CODECOV_TOKEN` | Codecov authentication token | CI workflow | Only if using private Codecov or need upload authentication |
-| `APIFY_API_TOKEN` | Apify API token | Future use | If automating Apify actor deployment |
 
 **Note:** The CI workflow uses Codecov but has `fail_ci_if_error: false`, so it will work without a token for public repositories.
 
@@ -119,6 +125,65 @@ For better security, use a Personal Access Token instead of your password:
 
 **Token Format:** Docker Hub tokens start with `dckr_pat_` followed by a long string of characters.
 
+## Apify API Token Setup
+
+The **Deploy to Apify** workflow requires an Apify API token to automatically deploy your actor when you push to GitHub.
+
+### Step 1: Create Apify Account
+
+If you don't have an Apify account:
+
+1. Go to [https://apify.com](https://apify.com)
+2. Click **Sign Up** (or **Sign In** if you have an account)
+3. Complete the registration process
+4. Verify your email address if required
+
+### Step 2: Choose the Right API Token Type
+
+**⚠️ Important:** You need to choose between **Personal API tokens** and **Organization API tokens**:
+
+- **Use Organization API tokens** if you want the actor deployed under your organization
+- **Use Personal API tokens** if you want the actor deployed under your personal account
+
+**For most cases, especially if you're working with a team or want better management, use an Organization API token.**
+
+### Step 3: Get Your Organization API Token
+
+**Option A: Use Existing Organization Token**
+
+1. Log in to [Apify Console](https://console.apify.com)
+2. Click your profile icon in the top right → **Settings**
+3. Navigate to **Integrations** tab (or **API tokens** tab)
+4. Scroll down to **Organization API tokens** section
+5. Find your existing organization token (e.g., "Default API token created on sign up")
+6. Click the **eye icon** 👁️ to reveal the token
+7. Click the **copy icon** 📋 to copy the token
+8. Store it securely - you'll use this as the `APIFY_API_TOKEN` secret
+
+**Option B: Create New Organization Token (Recommended)**
+
+1. Log in to [Apify Console](https://console.apify.com)
+2. Click your profile icon in the top right → **Settings**
+3. Navigate to **Integrations** tab (or **API tokens** tab)
+4. Scroll down to **Organization API tokens** section
+5. Click **"+ Create a new token"** button
+6. Fill in the token details:
+   - **Name**: `GitHub Actions Auto-Deploy` (or similar)
+   - **Expires**: Choose expiration date or leave blank for no expiration
+7. Click **Create**
+8. **Copy the token immediately** - you won't be able to see it again!
+9. Store it securely - you'll use this as the `APIFY_API_TOKEN` secret
+
+**Token Format:** Apify API tokens start with `apify_api_` followed by a long string of characters.
+
+**Important Notes:**
+- ✅ **Use Organization API tokens** to deploy actors under your organization
+- ❌ **Don't use Personal API tokens** if you want organization-level deployment
+- Keep your API token secure and never commit it to the repository
+- The token needs to have permissions to push actors to your Apify account/organization
+- If you lose the token, you'll need to generate a new one
+- You can view, copy, regenerate, edit, or delete tokens from the API tokens page
+
 ### Step 4: Add Secrets to GitHub
 
 1. Go to your GitHub repository
@@ -133,6 +198,11 @@ For better security, use a Personal Access Token instead of your password:
    - Name: `DOCKER_PASSWORD`
    - Value: Your Docker Hub Personal Access Token (e.g., `dckr_pat_xxxxxxxxxxxxx`)
    - Click **Add secret**
+5. Add `APIFY_API_TOKEN`:
+   - Click **New repository secret**
+   - Name: `APIFY_API_TOKEN`
+   - Value: Your Apify API token (e.g., `apify_api_xxxxxxxxxxxxx`)
+   - Click **Add secret**
 
 ## Verification
 
@@ -141,7 +211,10 @@ After setting up secrets, verify everything works:
 ### 1. Check Secrets Are Configured
 
 1. Go to **Settings** → **Secrets and variables** → **Actions**
-2. Verify both `DOCKER_USERNAME` and `DOCKER_PASSWORD` are listed
+2. Verify all required secrets are listed:
+   - `DOCKER_USERNAME` (for CD workflow)
+   - `DOCKER_PASSWORD` (for CD workflow)
+   - `APIFY_API_TOKEN` (for Deploy to Apify workflow)
 3. Ensure they show as "Updated" with recent timestamps
 
 ### 2. Trigger the CD Workflow
@@ -241,6 +314,41 @@ git push origin v1.0.0
 - Generate a new Personal Access Token in Docker Hub
 - Update the `DOCKER_PASSWORD` secret with the new token
 - Re-run the workflow
+
+#### Apify Deployment Fails
+
+**Error:** `Error: Missing or invalid APIFY_API_TOKEN` or `authentication failed`
+
+**Solutions:**
+- Verify `APIFY_API_TOKEN` secret is set in GitHub repository settings
+- Ensure the token name matches exactly: `APIFY_API_TOKEN` (case-sensitive)
+- **Important:** Make sure you're using an **Organization API token**, not a Personal API token (if deploying to organization)
+- Check that the token hasn't expired (if expiration was set)
+- Verify the token format starts with `apify_api_`
+- Generate a new API token in Apify Console and update the secret
+- Ensure the token has permissions to push actors to your Apify account/organization
+
+**Error:** `Error: Actor not found` or `Cannot find actor`
+
+**Solutions:**
+- Verify the actor name in `.actor/actor.json` matches your Apify actor
+- Ensure you've deployed the actor at least once manually using `apify push`
+- Check that you're using the correct Apify account/organization (the token belongs to the account/organization that owns the actor)
+- If using an organization token, verify the actor exists in your organization, not your personal account
+
+**Error:** `Error: Version number must be MAJOR.MINOR`
+
+**Solutions:**
+- Check `.actor/actor.json` - version must be in format `1.0` (not `1.0.0`)
+- Update the version field to use `MAJOR.MINOR` format
+- Commit and push the change
+
+**Error:** Actor deployed to wrong account/organization
+
+**Solutions:**
+- Verify you're using an **Organization API token** (not Personal) if you want organization deployment
+- Check which account/organization the token belongs to in Apify Console → Settings → API tokens
+- The actor will be deployed to the account/organization associated with the token you use
 
 ### Getting Help
 
