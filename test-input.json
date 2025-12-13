@@ -1,0 +1,5 @@
+{
+  "subreddits": ["programming"],
+  "sortBy": "hot",
+  "limit": 5
+}

@@ -1,0 +1,21 @@
+{
+  "actorSpecification": 1,
+  "name": "reddit-scraper",
+  "version": "1.0.0",
+  "title": "Reddit Scraper",
+  "description": "Scrapes Reddit posts, comments, and threads from subreddits using Reddit's public API. No authentication required. Challenge-compliant actor for the Apify $1M Challenge.",
+  "defaultRunTimeoutSecs": 3600,
+  "defaultMemoryMbytes": 4096,
+  "defaultCpuUnits": 1024,
+  "dockerfileFile": "Dockerfile",
+  "readme": "README.md",
+  "runtimeType": "PYTHON",
+  "runtimeVersion": "3.11",
+  "entrypoint": "main.py",
+  "storages": {
+    "dataset": "./storage/datasets/default",
+    "keyValueStore": "./storage/key_value_stores/default",
+    "requestQueue": "./storage/request_queues/default"
+  }
+}
+

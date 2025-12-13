@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reddit-scraper"
+version = "1.0.0"
+description = "Reddit Scraper Actor for Apify"
+requires-python = ">=3.11"
+dependencies = [
+    "apify",
+    "aiohttp",
+]
+
+[project.scripts]
+main = "main:main"
+

@@ -1,0 +1,10 @@
+{
+  "name": "reddit-scraper",
+  "version": "1.0.0",
+  "description": "Reddit Scraper Actor for Apify",
+  "type": "module",
+  "scripts": {
+    "start": "python3 main.py"
+  }
+}
+
