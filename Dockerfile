@@ -4,10 +4,12 @@ FROM apify/actor-python:3.11
 COPY requirements.txt ./
 
 # Install dependencies
+# Upgrade pip and setuptools first to ensure compatibility with cross-platform builds
+# This is especially important when building for multiple architectures (amd64/arm64)
 # All listed packages (apify, aiohttp, pytest*) have pre-built wheels
 # for both amd64 and arm64, so build tools are not needed
-# Using pip as-is from base image (no upgrade needed for compatibility)
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
 COPY . ./
