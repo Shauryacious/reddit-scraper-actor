@@ -155,6 +155,8 @@ Reddit's public API has rate limits. The actor includes delays between requests 
 - **API**: Reddit JSON API (public, no authentication)
 - **Dependencies**: Apify SDK, aiohttp
 - **Architecture**: Modular structure with separate services and utilities
+- **Code Quality**: Black formatting, flake8 linting, isort import sorting
+- **Testing**: pytest with coverage reporting
 
 ## Project Structure
 
@@ -167,13 +169,69 @@ reddit-scraper-actor/
 │   │   └── reddit_service.py  # Reddit API service
 │   └── utils/
 │       └── helpers.py          # Utility functions
+├── tests/                      # Unit tests
+├── documentation/             # Comprehensive documentation
+│   ├── getting-started/       # Setup guides
+│   ├── deployment/            # CI/CD guides
+│   ├── api-reference/         # API documentation
+│   └── learnings/             # Development insights
 ├── .actor/
 │   └── actor.json             # Actor configuration
 ├── input_schema.json          # Input schema
 ├── requirements.txt           # Python dependencies
 ├── Dockerfile                 # Docker configuration
-└── README.md                  # Documentation
+└── README.md                  # This file
 ```
+
+## Development
+
+### Code Formatting
+
+This project uses [Black](https://black.readthedocs.io/) for code formatting. Before committing, run:
+
+```bash
+black src/ tests/
+```
+
+The CI/CD pipeline enforces code formatting standards. See [Code Formatting Guide](./documentation/development/code-formatting.md) for details.
+
+### Running Tests
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ -v --cov=src --cov-report=term-missing
+```
+
+### Linting
+
+```bash
+# Format code
+black src/ tests/
+
+# Sort imports
+isort src/ tests/
+
+# Lint code
+flake8 src/ tests/
+```
+
+## Documentation
+
+Comprehensive documentation is available in the [`documentation/`](./documentation/) directory:
+
+- **[Getting Started](./documentation/getting-started/)** - Setup and installation guides
+- **[Deployment](./documentation/deployment/)** - CI/CD and deployment documentation
+- **[Development](./documentation/development/)** - Code formatting and development guidelines
+- **[API Reference](./documentation/api-reference/)** - Input/output specifications
+- **[Learnings](./documentation/learnings/)** - Development insights and best practices
+
+See the [Documentation Index](./documentation/README.md) for a complete overview.
 
 ## Based On
 
