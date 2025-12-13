@@ -4,6 +4,7 @@
   "version": "1.0",
   "title": "Reddit Scraper Gold",
   "description": "Reddit Scraper Gold - Scrapes Reddit posts, comments, and threads from subreddits using Reddit's public API. No authentication required. Challenge-compliant actor for the Apify $1M Challenge.",
+  "icon": "../logo.png",
   "defaultRunTimeoutSecs": 3600,
   "defaultMemoryMbytes": 4096,
   "defaultCpuUnits": 1024,
