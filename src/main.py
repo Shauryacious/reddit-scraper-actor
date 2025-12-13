@@ -210,21 +210,13 @@ async def run_scraper(input_data: Dict[str, Any]):
             try:
                 # Always save posts-only CSV
                 posts_csv_content = export_posts_to_csv(all_posts)
-                await Actor.set_record(
-                    "reddit_scraper_output.csv",
-                    posts_csv_content.encode('utf-8'),
-                    content_type="text/csv"
-                )
+                await Actor.set_value("reddit_scraper_output.csv", posts_csv_content)
                 Actor.log.info("CSV export (posts only) saved to key-value store")
 
                 # Save CSV with comments if comments were included
                 if include_comments:
                     comments_csv_content = export_posts_with_comments_to_csv(all_posts)
-                    await Actor.set_record(
-                        "reddit_scraper_output_with_comments.csv",
-                        comments_csv_content.encode('utf-8'),
-                        content_type="text/csv"
-                    )
+                    await Actor.set_value("reddit_scraper_output_with_comments.csv", comments_csv_content)
                     Actor.log.info("CSV export (with comments) saved to key-value store")
             except Exception as e:
                 Actor.log.error(f"Error generating CSV export: {e}")

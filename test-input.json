@@ -1,5 +1,5 @@
 {
-  "subreddits": ["programming"],
-  "sortBy": "hot",
+  "subreddits": ["Tesla"],
+  "sortBy": "new",
   "limit": 5
 }

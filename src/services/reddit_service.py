@@ -4,7 +4,8 @@ Handles all Reddit API interactions for scraping posts and comments
 Uses Reddit's public API (no authentication required)
 """
 
-from typing import Dict, List, Optional
+import asyncio
+from typing import Dict, List, Optional, Tuple
 
 import aiohttp
 from apify import Actor
@@ -31,7 +32,15 @@ class RedditService:
     def __init__(self):
         """Initialize Reddit service"""
         self.base_url = REDDIT_BASE_URL
-        self.headers = {"User-Agent": REDDIT_USER_AGENT}
+        # Use browser-like headers to avoid 403 errors from Reddit
+        self.headers = {
+            "User-Agent": REDDIT_USER_AGENT,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+        }
         Actor.log.info("Reddit service initialized (free, no authentication required)")
 
     def _build_subreddit_url(
@@ -84,6 +93,57 @@ class RedditService:
         query_string = "&".join([f"{k}={v}" for k, v in params.items()])
         return f"{url}?{query_string}"
 
+    async def _make_request_with_retry(
+        self, url: str, max_retries: int = 3, retry_delay: float = 2.0
+    ) -> Tuple[Optional[int], Optional[Dict]]:
+        """
+        Make HTTP request with retry logic for 403 errors
+
+        Args:
+            url: URL to request
+            max_retries: Maximum number of retries
+            retry_delay: Initial delay between retries (exponential backoff)
+
+        Returns:
+            Tuple of (status_code, response_data) or (None, None) if all retries failed
+        """
+        for attempt in range(max_retries):
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url, headers=self.headers) as response:
+                        if response.status == 200:
+                            try:
+                                data = await response.json()
+                                return (response.status, data)
+                            except Exception as e:
+                                Actor.log.error(f"Failed to parse JSON response: {e}")
+                                return (response.status, None)
+                        elif response.status == 403 and attempt < max_retries - 1:
+                            # Wait before retrying with exponential backoff
+                            wait_time = retry_delay * (2 ** attempt)
+                            Actor.log.warning(
+                                f"Got 403 error, retrying in {wait_time}s (attempt {attempt + 1}/{max_retries})"
+                            )
+                            await asyncio.sleep(wait_time)
+                            continue
+                        else:
+                            # For non-200, non-403 statuses, try to read error text
+                            try:
+                                error_text = await response.text()
+                                return (response.status, {"error": error_text})
+                            except Exception:
+                                return (response.status, None)
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    wait_time = retry_delay * (2 ** attempt)
+                    Actor.log.warning(
+                        f"Request failed, retrying in {wait_time}s (attempt {attempt + 1}/{max_retries}): {e}"
+                    )
+                    await asyncio.sleep(wait_time)
+                else:
+                    Actor.log.error(f"Request failed after {max_retries} attempts: {e}")
+        return (None, None)
+
     async def get_posts_from_subreddit(
         self,
         subreddit: str,
@@ -109,29 +169,34 @@ class RedditService:
 
             Actor.log.debug(f"Fetching posts from r/{clean_name}", {"url": url})
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, headers=self.headers) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        posts = []
+            status_code, data = await self._make_request_with_retry(url)
+            if status_code is None or data is None:
+                Actor.log.error(f"Failed to fetch posts from r/{clean_name} after retries")
+                return []
 
-                        if "data" in data and "children" in data["data"]:
-                            for child in data["data"]["children"]:
-                                post_data = child.get("data", {})
-                                normalized_post = normalize_post_data(
-                                    post_data, "subreddit", clean_name
-                                )
-                                posts.append(normalized_post)
+            if status_code == 200:
+                posts = []
 
-                        Actor.log.info(
-                            f"Fetched {len(posts)} posts from r/{clean_name}"
+                if "data" in data and "children" in data["data"]:
+                    for child in data["data"]["children"]:
+                        post_data = child.get("data", {})
+                        normalized_post = normalize_post_data(
+                            post_data, "subreddit", clean_name
                         )
-                        return posts
-                    else:
-                        Actor.log.warning(
-                            f"Reddit API returned status {response.status} for r/{clean_name}"
-                        )
-                        return []
+                        posts.append(normalized_post)
+
+                Actor.log.info(
+                    f"Fetched {len(posts)} posts from r/{clean_name}"
+                )
+                return posts
+            else:
+                # Log response body for debugging 403 errors
+                error_text = data.get("error", "") if isinstance(data, dict) else str(data)
+                Actor.log.warning(
+                    f"Reddit API returned status {status_code} for r/{clean_name}",
+                    {"response_preview": error_text[:200] if error_text else "No response body"}
+                )
+                return []
         except Exception as e:
             Actor.log.error(f"Error fetching posts from r/{subreddit}: {e}")
             return []
@@ -155,29 +220,34 @@ class RedditService:
 
             Actor.log.debug(f"Searching Reddit for: '{query}'", {"url": url})
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, headers=self.headers) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        posts = []
+            status_code, data = await self._make_request_with_retry(url)
+            if status_code is None or data is None:
+                Actor.log.error(f"Failed to search Reddit after retries")
+                return []
 
-                        if "data" in data and "children" in data["data"]:
-                            for child in data["data"]["children"]:
-                                post_data = child.get("data", {})
-                                normalized_post = normalize_post_data(
-                                    post_data, "search", query
-                                )
-                                posts.append(normalized_post)
+            if status_code == 200:
+                posts = []
 
-                        Actor.log.info(
-                            f"Found {len(posts)} posts for search query: '{query}'"
+                if "data" in data and "children" in data["data"]:
+                    for child in data["data"]["children"]:
+                        post_data = child.get("data", {})
+                        normalized_post = normalize_post_data(
+                            post_data, "search", query
                         )
-                        return posts
-                    else:
-                        Actor.log.warning(
-                            f"Reddit search API returned status {response.status}"
-                        )
-                        return []
+                        posts.append(normalized_post)
+
+                Actor.log.info(
+                    f"Found {len(posts)} posts for search query: '{query}'"
+                )
+                return posts
+            else:
+                # Log response body for debugging
+                error_text = data.get("error", "") if isinstance(data, dict) else str(data)
+                Actor.log.warning(
+                    f"Reddit search API returned status {status_code}",
+                    {"response_preview": error_text[:200] if error_text else "No response body"}
+                )
+                return []
         except Exception as e:
             Actor.log.error(f"Error searching Reddit: {e}")
             return []
@@ -211,40 +281,45 @@ class RedditService:
                 {"subreddit": clean_name, "max_comments": max_comments},
             )
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(full_url, headers=self.headers) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        comments = []
+            status_code, data = await self._make_request_with_retry(full_url)
+            if status_code is None or data is None:
+                Actor.log.error(f"Failed to fetch comments for post {post_id} after retries")
+                return []
 
-                        # Reddit comments API returns array: [post data, comments data]
-                        if isinstance(data, list) and len(data) > 1:
-                            comments_data = data[1].get("data", {}).get("children", [])
+            if status_code == 200:
+                comments = []
 
-                            for child in comments_data[:max_comments]:
-                                comment_data = child.get("data", {})
+                # Reddit comments API returns array: [post data, comments data]
+                if isinstance(data, list) and len(data) > 1:
+                    comments_data = data[1].get("data", {}).get("children", [])
 
-                                # Skip "more" objects and deleted comments
-                                if (
-                                    child.get("kind") == "t1"
-                                    and comment_data.get("body")
-                                    and comment_data.get("body") != "[deleted]"
-                                ):
-                                    normalized_comment = normalize_comment_data(
-                                        comment_data, post_id
-                                    )
-                                    comments.append(normalized_comment)
+                    for child in comments_data[:max_comments]:
+                        comment_data = child.get("data", {})
 
-                        Actor.log.debug(
-                            f"Fetched {len(comments)} comments for post {post_id}"
-                        )
-                        return comments
-                    else:
-                        Actor.log.warning(
-                            f"Failed to fetch comments for post {post_id}: "
-                            f"status {response.status}"
-                        )
-                        return []
+                        # Skip "more" objects and deleted comments
+                        if (
+                            child.get("kind") == "t1"
+                            and comment_data.get("body")
+                            and comment_data.get("body") != "[deleted]"
+                        ):
+                            normalized_comment = normalize_comment_data(
+                                comment_data, post_id
+                            )
+                            comments.append(normalized_comment)
+
+                Actor.log.debug(
+                    f"Fetched {len(comments)} comments for post {post_id}"
+                )
+                return comments
+            else:
+                # Log response body for debugging
+                error_text = data.get("error", "") if isinstance(data, dict) else str(data)
+                Actor.log.warning(
+                    f"Failed to fetch comments for post {post_id}: "
+                    f"status {status_code}",
+                    {"response_preview": error_text[:200] if error_text else "No response body"}
+                )
+                return []
         except Exception as e:
             Actor.log.error(f"Error fetching comments for post {post_id}: {e}")
             return []

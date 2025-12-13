@@ -3,8 +3,10 @@ Configuration constants for Reddit Scraper Actor
 """
 
 # Reddit API Configuration
-REDDIT_BASE_URL = "https://www.reddit.com"
-REDDIT_USER_AGENT = "RedditScraper/1.0 (Apify Actor)"
+# Use old.reddit.com as it's more reliable for JSON API access
+REDDIT_BASE_URL = "https://old.reddit.com"
+# Use a realistic browser User-Agent to avoid 403 errors
+REDDIT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 # API Limits
 MAX_POSTS_PER_REQUEST = 100
