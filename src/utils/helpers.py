@@ -2,8 +2,8 @@
 Helper utility functions for Reddit Scraper Actor
 """
 
-from typing import List, Dict, Any
 from datetime import datetime, timezone
+from typing import Any, Dict, List
 
 
 def clean_subreddit_name(subreddit: str) -> str:

@@ -11,16 +11,12 @@ Last updated: 2024
 
 import asyncio
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from apify import Actor
 
-from src.config import (
-    DEFAULT_SORT,
-    DEFAULT_TIME_FILTER,
-    DEFAULT_LIMIT,
-    DEFAULT_MAX_COMMENTS,
-    DELAY_BETWEEN_SUBREDDITS_SECONDS,
-)
+from src.config import (DEFAULT_LIMIT, DEFAULT_MAX_COMMENTS, DEFAULT_SORT,
+                        DEFAULT_TIME_FILTER, DELAY_BETWEEN_SUBREDDITS_SECONDS)
 from src.services.reddit_service import RedditService
 from src.utils.helpers import validate_input
 

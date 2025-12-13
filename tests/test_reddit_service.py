@@ -2,9 +2,11 @@
 Unit tests for RedditService
 """
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
 from aiohttp import ClientResponse
+
 from src.services.reddit_service import RedditService
 
 

@@ -106,7 +106,12 @@ Follow the instructions in [SECRETS_SETUP.md](./SECRETS_SETUP.md) to add:
 
 **Jobs:**
 - **test**: Runs pytest with coverage on Python 3.11 and 3.12
-- **lint**: Runs flake8, black, and isort checks
+- **lint**: Runs flake8, black (formatting check), and isort (import sorting check)
+
+**Code Quality Checks:**
+- ✅ **Black**: Enforces code formatting (must pass `black --check`)
+- ✅ **isort**: Enforces import sorting (must pass `isort --check-only`)
+- ✅ **flake8**: Performs static analysis and style checks
 
 **Duration:** ~2-5 minutes
 
@@ -154,7 +159,13 @@ pytest tests/ -v
 # Run tests with coverage
 pytest tests/ -v --cov=src --cov-report=term-missing
 
-# Run linting
+# Format code (fixes formatting issues)
+black src/ tests/
+
+# Sort imports (fixes import order)
+isort src/ tests/
+
+# Run linting checks
 flake8 src/ tests/
 black --check src/ tests/
 isort --check-only src/ tests/

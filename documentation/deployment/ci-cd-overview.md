@@ -100,10 +100,12 @@ docker run --rm reddit-scraper-actor:local
 - Automated version tagging
 
 ✅ **Code Quality:**
-- flake8 linting
-- black code formatting
-- isort import sorting
-- pytest coverage
+- **Black**: Code formatting (enforced in CI)
+- **isort**: Import sorting (enforced in CI)
+- **flake8**: Static analysis and linting
+- **pytest**: Test coverage reporting
+
+**Note:** All code must be formatted with Black before committing. The CI pipeline will fail if code is not properly formatted. See [Code Formatting Guide](../development/code-formatting.md) for details.
 
 ## 🔧 Troubleshooting
 

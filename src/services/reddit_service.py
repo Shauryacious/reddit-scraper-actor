@@ -4,24 +4,17 @@ Handles all Reddit API interactions for scraping posts and comments
 Uses Reddit's public API (no authentication required)
 """
 
+from typing import Dict, List, Optional
+
 import aiohttp
-from typing import List, Dict, Optional
 from apify import Actor
 
-from src.config import (
-    REDDIT_BASE_URL,
-    REDDIT_USER_AGENT,
-    MAX_POSTS_PER_REQUEST,
-    MAX_COMMENTS_PER_REQUEST,
-    VALID_SORT_OPTIONS,
-    VALID_TIME_FILTERS,
-    DELAY_BETWEEN_SUBREDDITS_SECONDS,
-)
-from src.utils.helpers import (
-    clean_subreddit_name,
-    normalize_post_data,
-    normalize_comment_data,
-)
+from src.config import (DELAY_BETWEEN_SUBREDDITS_SECONDS,
+                        MAX_COMMENTS_PER_REQUEST, MAX_POSTS_PER_REQUEST,
+                        REDDIT_BASE_URL, REDDIT_USER_AGENT, VALID_SORT_OPTIONS,
+                        VALID_TIME_FILTERS)
+from src.utils.helpers import (clean_subreddit_name, normalize_comment_data,
+                               normalize_post_data)
 
 
 class RedditService:

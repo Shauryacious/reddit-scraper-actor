@@ -25,7 +25,9 @@
 - ✅ Runs on push and pull requests
 - ✅ Tests on Python 3.11 and 3.12
 - ✅ Code coverage reporting
-- ✅ Linting with flake8, black, and isort
+- ✅ Code formatting check with Black (enforced)
+- ✅ Import sorting check with isort (enforced)
+- ✅ Linting with flake8
 
 **CD Workflow** (`.github/workflows/cd.yml`):
 - ✅ Builds Docker image on main/master branch
@@ -44,13 +46,20 @@
 - ✅ Multi-platform builds enabled
 - ✅ Automated tagging based on branches and versions
 
-### 5. Documentation
+### 5. Code Quality Tools
+- ✅ **Black**: Code formatting (enforced in CI)
+- ✅ **isort**: Import sorting (enforced in CI)
+- ✅ **flake8**: Static analysis and linting
+- ✅ All code formatted and ready for CI/CD
+
+### 6. Documentation
 - ✅ `CICD_SETUP.md` - Complete CI/CD documentation
 - ✅ `SECRETS_SETUP.md` - Secrets configuration guide
 - ✅ `README_CI_CD.md` - Quick start guide
 - ✅ `SETUP_SUMMARY.md` - This file
+- ✅ `documentation/development/code-formatting.md` - Code formatting guide
 
-### 6. Additional Features
+### 7. Additional Features
 - ✅ Dependabot configuration for automated dependency updates
 - ✅ Git setup script (`setup_git.sh`)
 
@@ -130,6 +139,12 @@ Before pushing, verify tests pass locally:
 # Install dependencies
 pip install -r requirements.txt
 
+# Format code (required before committing)
+black src/ tests/
+
+# Sort imports (required before committing)
+isort src/ tests/
+
 # Run all tests
 pytest tests/ -v
 
@@ -139,6 +154,11 @@ pytest tests/ -v --cov=src --cov-report=term-missing
 # Run specific test file
 pytest tests/test_helpers.py -v
 pytest tests/test_reddit_service.py -v
+
+# Check code quality
+flake8 src/ tests/
+black --check src/ tests/
+isort --check-only src/ tests/
 ```
 
 ## 🐳 Docker Commands
@@ -167,14 +187,18 @@ After setup, verify:
 - [ ] CI workflow runs on push/PR
 - [ ] CD workflow runs on main branch
 - [ ] Docker image appears in Docker Hub
+- [ ] Code formatted with Black
+- [ ] Imports sorted with isort
 - [ ] Tests pass locally
 - [ ] Tests pass in CI
+- [ ] Linting passes locally
 
 ## 📚 Documentation Reference
 
 - **Quick Start**: See `README_CI_CD.md`
 - **Detailed Setup**: See `CICD_SETUP.md`
 - **Secrets Guide**: See `SECRETS_SETUP.md`
+- **Code Formatting**: See `documentation/development/code-formatting.md`
 - **This Summary**: `SETUP_SUMMARY.md`
 
 ## 🎯 Workflow Triggers
@@ -193,7 +217,7 @@ After setup, verify:
 - ✅ Docker image security scanning with Trivy
 - ✅ Secrets stored in GitHub Secrets (not in code)
 - ✅ Automated dependency updates with Dependabot
-- ✅ Code quality checks (linting, formatting)
+- ✅ Code quality checks (Black formatting, isort import sorting, flake8 linting)
 
 ## 🚀 Ready to Go!
 

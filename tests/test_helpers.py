@@ -2,15 +2,13 @@
 Unit tests for helper utility functions
 """
 
-import pytest
 from datetime import datetime, timezone
-from src.utils.helpers import (
-    clean_subreddit_name,
-    format_timestamp,
-    validate_input,
-    normalize_post_data,
-    normalize_comment_data,
-)
+
+import pytest
+
+from src.utils.helpers import (clean_subreddit_name, format_timestamp,
+                               normalize_comment_data, normalize_post_data,
+                               validate_input)
 
 
 class TestCleanSubredditName:
