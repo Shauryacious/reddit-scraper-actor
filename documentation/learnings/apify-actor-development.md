@@ -118,6 +118,78 @@ CMD ["python", "main.py"]
 
 For optimization, use multi-stage builds when needed.
 
+### Multi-Architecture Docker Builds
+
+When building Docker images for multiple architectures (AMD64 and ARM64), you may encounter QEMU emulation issues.
+
+#### Common Issue: "Invalid ELF image for this architecture"
+
+**Error Message:**
+```
+process "/dev/.buildkit_qemu_emulator /bin/bash -o pipefail -c pip install..." 
+did not complete successfully: exit code: 255
+```
+
+**Root Cause:**
+- QEMU emulation not properly configured for cross-platform builds
+- Base image may not support all target architectures
+- Build process attempting to execute binaries for wrong architecture
+
+#### Solution: Configure QEMU in CI/CD
+
+**GitHub Actions Workflow Setup:**
+
+```yaml
+steps:
+  - name: Set up QEMU for multi-architecture builds
+    uses: docker/setup-qemu-action@v3
+    with:
+      platforms: arm64
+  
+  - name: Set up Docker Buildx
+    uses: docker/setup-buildx-action@v3
+  
+  - name: Build and push Docker image
+    uses: docker/build-push-action@v6
+    with:
+      platforms: linux/amd64,linux/arm64
+```
+
+#### Best Practices
+
+1. **Start with Single Architecture**: Build for `linux/amd64` first to verify Dockerfile works
+2. **Add QEMU Setup**: Always set up QEMU before Buildx when targeting multiple platforms
+3. **Verify Base Image Support**: Ensure base image (`apify/actor-python:3.11`) supports target architectures
+4. **Use Wheel-Only Installs**: Ensure pip prefers pre-built wheels to avoid cross-compilation issues
+
+#### Dockerfile Optimization for Multi-Arch
+
+```dockerfile
+FROM apify/actor-python:3.11
+
+# Copy requirements first (caching)
+COPY requirements.txt ./
+
+# Install dependencies
+# pip automatically prefers wheels over source builds
+# This avoids cross-compilation issues in multi-arch builds
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy source code
+COPY . ./
+
+# Set entry point
+CMD python main.py
+```
+
+#### Troubleshooting Multi-Arch Builds
+
+1. **If ARM64 build fails**: Start with AMD64 only, verify base image supports ARM64
+2. **QEMU errors**: Ensure QEMU setup step comes before Buildx setup
+3. **Package installation failures**: Check if packages have pre-built wheels for target architecture
+4. **Build timeout**: Multi-arch builds take longer; consider building platforms separately if needed
+
 ## Testing Apify Actors
 
 ### Local Testing
@@ -159,6 +231,8 @@ apify run
 - Build multi-platform images (amd64, arm64)
 - Tag with version numbers
 - Push to Docker Hub for Apify to use
+
+**Important**: When setting up multi-architecture builds, ensure QEMU is configured before Buildx. See the [Multi-Architecture Docker Builds](#multi-architecture-docker-builds) section above for details.
 
 ## Error Handling
 
@@ -274,6 +348,20 @@ Actor.log.info("Scraping subreddit", {
 ### Issue: Docker build fails
 
 **Solution**: Check Dockerfile syntax and dependencies
+
+### Issue: Multi-architecture Docker build fails with "Invalid ELF image" error
+
+**Error**: 
+```
+process "/dev/.buildkit_qemu_emulator /bin/bash..." did not complete successfully: exit code: 255
+```
+
+**Solution**: 
+1. Ensure QEMU is set up before Buildx in your CI/CD workflow
+2. Add `docker/setup-qemu-action@v3` step before `docker/setup-buildx-action@v3`
+3. Start with single architecture (`linux/amd64`) to verify Dockerfile works
+4. Verify base image supports target architectures
+5. See [Multi-Architecture Docker Builds](#multi-architecture-docker-builds) section for detailed solution
 
 ## Resources
 
