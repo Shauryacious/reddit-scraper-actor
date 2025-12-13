@@ -56,8 +56,8 @@ Add these secrets:
 
 ## 📚 Documentation
 
-- **[CICD_SETUP.md](./CICD_SETUP.md)** - Detailed CI/CD documentation
-- **[SECRETS_SETUP.md](./SECRETS_SETUP.md)** - Secrets configuration guide
+- **[cicd-setup.md](./cicd-setup.md)** - Detailed CI/CD documentation
+- **[secrets-setup.md](./secrets-setup.md)** - Secrets and environment variables configuration guide
 
 ## 🧪 Test Locally
 
@@ -126,7 +126,7 @@ docker run --rm reddit-scraper-actor:local
 
 ## 📞 Need Help?
 
-1. Check [CICD_SETUP.md](./CICD_SETUP.md) for detailed docs
+1. Check [cicd-setup.md](./cicd-setup.md) for detailed docs
 2. Review GitHub Actions logs
-3. Check [SECRETS_SETUP.md](./SECRETS_SETUP.md) for secrets issues
+3. Check [secrets-setup.md](./secrets-setup.md) for secrets and environment variables setup
 

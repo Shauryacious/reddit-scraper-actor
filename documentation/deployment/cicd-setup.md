@@ -34,12 +34,12 @@ Before setting up CI/CD, ensure you have:
 2. **Docker Hub Account**
    - Account created at [hub.docker.com](https://hub.docker.com)
    - Repository named `reddit-scraper-actor` created
-   - See [SECRETS_SETUP.md](./SECRETS_SETUP.md) for details
+   - See [secrets-setup.md](./secrets-setup.md) for details
 
 3. **GitHub Secrets**
    - `DOCKER_USERNAME` - Your Docker Hub username
    - `DOCKER_PASSWORD` - Your Docker Hub password or access token
-   - See [SECRETS_SETUP.md](./SECRETS_SETUP.md) for setup instructions
+   - See [secrets-setup.md](./secrets-setup.md) for setup instructions
 
 ## Initial Setup
 
@@ -74,7 +74,7 @@ git push -u origin main
 
 ### 4. Configure GitHub Secrets
 
-Follow the instructions in [SECRETS_SETUP.md](./SECRETS_SETUP.md) to add:
+Follow the instructions in [secrets-setup.md](./secrets-setup.md) to add:
 - `DOCKER_USERNAME`
 - `DOCKER_PASSWORD`
 

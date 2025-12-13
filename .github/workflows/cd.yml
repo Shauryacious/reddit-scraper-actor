@@ -12,6 +12,9 @@ on:
         required: true
         default: 'latest'
 
+# Environment variables used across all jobs
+# REGISTRY: Docker registry (Docker Hub)
+# IMAGE_NAME: Full Docker image name (requires DOCKER_USERNAME secret)
 env:
   REGISTRY: docker.io
   IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/reddit-scraper-actor
@@ -77,10 +80,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v6
     
+    - name: Determine image tag for security scan
+      id: image-tag
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+        elif [ "${{ github.ref_type }}" == "tag" ]; then
+          echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+        elif [ "${{ github.ref_name }}" == "main" ] || [ "${{ github.ref_name }}" == "master" ]; then
+          echo "tag=latest" >> $GITHUB_OUTPUT
+        else
+          echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+        fi
+    
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: ${{ env.IMAGE_NAME }}:${{ github.ref_name == 'main' || github.ref_name == 'master' && 'latest' || github.ref_name }}
+        image-ref: ${{ env.IMAGE_NAME }}:${{ steps.image-tag.outputs.tag }}
         format: 'sarif'
         output: 'trivy-results.sarif'
     
