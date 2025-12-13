@@ -1,0 +1,26 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Reddit Scraper Output",
+  "description": "Output schema for Reddit Scraper Actor. Contains Reddit posts in the dataset and CSV exports in the key-value store.",
+  "properties": {
+    "posts": {
+      "type": "string",
+      "title": "Reddit Posts",
+      "description": "All scraped Reddit posts stored in the default dataset",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    },
+    "csvExport": {
+      "type": "string",
+      "title": "CSV Export",
+      "description": "CSV file containing all scraped posts (without comments)",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/reddit_scraper_output.csv"
+    },
+    "csvExportWithComments": {
+      "type": "string",
+      "title": "CSV Export (with Comments)",
+      "description": "CSV file containing all scraped posts with comments as separate rows",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/reddit_scraper_output_with_comments.csv"
+    }
+  }
+}
+

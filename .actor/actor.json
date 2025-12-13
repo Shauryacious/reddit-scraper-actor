@@ -12,6 +12,7 @@
   "readme": "README.md",
   "runtimeType": "PYTHON",
   "runtimeVersion": "3.11",
-  "entrypoint": "main.py"
+  "entrypoint": "main.py",
+  "output": "./output_schema.json"
 }
 

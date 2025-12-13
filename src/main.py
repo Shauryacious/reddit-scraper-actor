@@ -205,21 +205,27 @@ async def run_scraper(input_data: Dict[str, Any]):
                 f"Successfully scraped and saved {len(all_posts)} Reddit posts"
             )
 
-            # Generate CSV export
-            Actor.log.info("Generating CSV export")
+            # Generate CSV exports
+            Actor.log.info("Generating CSV exports")
             try:
-                if include_comments:
-                    # Export with comments as separate rows
-                    csv_content = export_posts_with_comments_to_csv(all_posts)
-                    csv_filename = "reddit_scraper_output_with_comments.csv"
-                else:
-                    # Export posts only
-                    csv_content = export_posts_to_csv(all_posts)
-                    csv_filename = "reddit_scraper_output.csv"
+                # Always save posts-only CSV
+                posts_csv_content = export_posts_to_csv(all_posts)
+                await Actor.set_record(
+                    "reddit_scraper_output.csv",
+                    posts_csv_content.encode('utf-8'),
+                    content_type="text/csv"
+                )
+                Actor.log.info("CSV export (posts only) saved to key-value store")
 
-                # Save CSV to key-value store
-                await Actor.set_record(csv_filename, csv_content.encode('utf-8'), content_type="text/csv")
-                Actor.log.info(f"CSV export saved to key-value store as '{csv_filename}'")
+                # Save CSV with comments if comments were included
+                if include_comments:
+                    comments_csv_content = export_posts_with_comments_to_csv(all_posts)
+                    await Actor.set_record(
+                        "reddit_scraper_output_with_comments.csv",
+                        comments_csv_content.encode('utf-8'),
+                        content_type="text/csv"
+                    )
+                    Actor.log.info("CSV export (with comments) saved to key-value store")
             except Exception as e:
                 Actor.log.error(f"Error generating CSV export: {e}")
         else:
