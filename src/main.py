@@ -23,7 +23,11 @@ from src.config import (
     DELAY_BETWEEN_SUBREDDITS_SECONDS,
 )
 from src.services.reddit_service import RedditService
-from src.utils.helpers import validate_input
+from src.utils.helpers import (
+    export_posts_to_csv,
+    export_posts_with_comments_to_csv,
+    validate_input,
+)
 
 
 async def scrape_subreddits(
@@ -200,6 +204,24 @@ async def run_scraper(input_data: Dict[str, Any]):
             Actor.log.info(
                 f"Successfully scraped and saved {len(all_posts)} Reddit posts"
             )
+
+            # Generate CSV export
+            Actor.log.info("Generating CSV export")
+            try:
+                if include_comments:
+                    # Export with comments as separate rows
+                    csv_content = export_posts_with_comments_to_csv(all_posts)
+                    csv_filename = "reddit_scraper_output_with_comments.csv"
+                else:
+                    # Export posts only
+                    csv_content = export_posts_to_csv(all_posts)
+                    csv_filename = "reddit_scraper_output.csv"
+
+                # Save CSV to key-value store
+                await Actor.set_record(csv_filename, csv_content.encode('utf-8'), content_type="text/csv")
+                Actor.log.info(f"CSV export saved to key-value store as '{csv_filename}'")
+            except Exception as e:
+                Actor.log.error(f"Error generating CSV export: {e}")
         else:
             Actor.log.warning("No posts were scraped. Check your input parameters.")
 
