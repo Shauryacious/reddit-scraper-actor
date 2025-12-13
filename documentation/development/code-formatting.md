@@ -7,10 +7,10 @@ This document outlines the code formatting and quality standards enforced in thi
 **IMPORTANT:** Always run these commands before pushing code to avoid CI failures:
 
 ```bash
-# 1. Format code with Black
+# 1. Format code with Black (run first)
 black src/ tests/
 
-# 2. Sort imports with isort
+# 2. Sort imports with isort (configured for Black compatibility)
 isort src/ tests/
 
 # 3. Verify formatting (must pass before pushing)
@@ -68,8 +68,9 @@ isort --check-only src/ tests/
 ```
 
 **Configuration:**
-- Uses default settings
+- Configured in `pyproject.toml` to use Black's profile for compatibility
 - CI/CD pipeline enforces import sorting on every push
+- Automatically compatible with Black formatting
 
 ## Linting
 
@@ -240,8 +241,9 @@ def scrape_posts(subreddit: str, limit: int = 25) -> List[Dict]:
 - Verify Black version: `black --version`
 
 **isort conflicts with Black?**
-- Use Black's compatible mode: `isort --profile black src/ tests/`
-- Or configure isort to be compatible with Black
+- isort is configured in `pyproject.toml` to use Black's profile automatically
+- Always run Black first, then isort
+- If issues persist, ensure `pyproject.toml` has `[tool.isort] profile = "black"`
 
 **flake8 errors after Black?**
 - Some flake8 rules may conflict with Black

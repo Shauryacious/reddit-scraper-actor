@@ -147,29 +147,35 @@ Follow the instructions in [SECRETS_SETUP.md](./SECRETS_SETUP.md) to add:
 
 ## Running Tests Locally
 
-Before pushing, you can run tests locally:
+### ⚠️ Pre-Push Checklist (REQUIRED)
+
+**IMPORTANT:** Always run these commands before pushing to avoid CI failures:
 
 ```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Run tests
-pytest tests/ -v
-
-# Run tests with coverage
-pytest tests/ -v --cov=src --cov-report=term-missing
-
-# Format code (fixes formatting issues)
+# 1. Format code (REQUIRED - CI will fail without this)
 black src/ tests/
 
-# Sort imports (fixes import order)
+# 2. Sort imports (REQUIRED - CI will fail without this)
 isort src/ tests/
 
-# Run linting checks
-flake8 src/ tests/
+# 3. Verify formatting (must pass before pushing)
 black --check src/ tests/
 isort --check-only src/ tests/
+
+# 4. Run tests
+pytest tests/ -v
+
+# 5. Run tests with coverage
+pytest tests/ -v --cov=src --cov-report=term-missing
+
+# 6. Run linting checks
+flake8 src/ tests/
 ```
+
+**The CI pipeline will fail if `black --check` or `isort --check-only` don't pass!** Always verify these checks locally before pushing.
 
 ## Docker Commands
 

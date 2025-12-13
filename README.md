@@ -193,10 +193,10 @@ reddit-scraper-actor/
 # 1. Format code with Black
 black src/ tests/
 
-# 2. Sort imports with isort
+# 2. Sort imports with isort (configured to be Black-compatible)
 isort src/ tests/
 
-# 3. Verify formatting (should pass)
+# 3. Verify formatting (MUST pass before pushing)
 black --check src/ tests/
 isort --check-only src/ tests/
 
@@ -204,7 +204,7 @@ isort --check-only src/ tests/
 pytest tests/ -v
 ```
 
-**The CI pipeline will fail if code is not properly formatted!** Always run Black and isort before committing.
+**The CI pipeline will fail if code is not properly formatted!** Always run Black and isort before committing. The order matters: run Black first, then isort.
 
 ### Code Formatting
 
