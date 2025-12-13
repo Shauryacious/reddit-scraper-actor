@@ -65,14 +65,12 @@ class TestRedditService:
         mock_response.json = AsyncMock(return_value=mock_response_data)
         
         # Make get() return an async context manager
-        async def mock_get(*args, **kwargs):
-            return mock_response
-        
-        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
-        mock_get.__aexit__ = AsyncMock(return_value=None)
+        mock_get_context = AsyncMock()
+        mock_get_context.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get_context.__aexit__ = AsyncMock(return_value=None)
         
         mock_session = AsyncMock()
-        mock_session.get = mock_get
+        mock_session.get = MagicMock(return_value=mock_get_context)
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
@@ -90,14 +88,12 @@ class TestRedditService:
         mock_response.status = 404
         
         # Make get() return an async context manager
-        async def mock_get(*args, **kwargs):
-            return mock_response
-        
-        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
-        mock_get.__aexit__ = AsyncMock(return_value=None)
+        mock_get_context = AsyncMock()
+        mock_get_context.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get_context.__aexit__ = AsyncMock(return_value=None)
         
         mock_session = AsyncMock()
-        mock_session.get = mock_get
+        mock_session.get = MagicMock(return_value=mock_get_context)
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
@@ -131,14 +127,12 @@ class TestRedditService:
         mock_response.json = AsyncMock(return_value=mock_response_data)
         
         # Make get() return an async context manager
-        async def mock_get(*args, **kwargs):
-            return mock_response
-        
-        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
-        mock_get.__aexit__ = AsyncMock(return_value=None)
+        mock_get_context = AsyncMock()
+        mock_get_context.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get_context.__aexit__ = AsyncMock(return_value=None)
         
         mock_session = AsyncMock()
-        mock_session.get = mock_get
+        mock_session.get = MagicMock(return_value=mock_get_context)
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
@@ -177,14 +171,12 @@ class TestRedditService:
         mock_response.json = AsyncMock(return_value=mock_response_data)
         
         # Make get() return an async context manager
-        async def mock_get(*args, **kwargs):
-            return mock_response
-        
-        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
-        mock_get.__aexit__ = AsyncMock(return_value=None)
+        mock_get_context = AsyncMock()
+        mock_get_context.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get_context.__aexit__ = AsyncMock(return_value=None)
         
         mock_session = AsyncMock()
-        mock_session.get = mock_get
+        mock_session.get = MagicMock(return_value=mock_get_context)
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
@@ -230,14 +222,12 @@ class TestRedditService:
         mock_response.json = AsyncMock(return_value=mock_response_data)
         
         # Make get() return an async context manager
-        async def mock_get(*args, **kwargs):
-            return mock_response
-        
-        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
-        mock_get.__aexit__ = AsyncMock(return_value=None)
+        mock_get_context = AsyncMock()
+        mock_get_context.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get_context.__aexit__ = AsyncMock(return_value=None)
         
         mock_session = AsyncMock()
-        mock_session.get = mock_get
+        mock_session.get = MagicMock(return_value=mock_get_context)
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
