@@ -185,6 +185,27 @@ reddit-scraper-actor/
 
 ## Development
 
+### ⚠️ Pre-Push Checklist
+
+**IMPORTANT:** Before pushing code, always run these checks to avoid CI failures:
+
+```bash
+# 1. Format code with Black
+black src/ tests/
+
+# 2. Sort imports with isort
+isort src/ tests/
+
+# 3. Verify formatting (should pass)
+black --check src/ tests/
+isort --check-only src/ tests/
+
+# 4. Run tests
+pytest tests/ -v
+```
+
+**The CI pipeline will fail if code is not properly formatted!** Always run Black and isort before committing.
+
 ### Code Formatting
 
 This project uses [Black](https://black.readthedocs.io/) for code formatting. Before committing, run:

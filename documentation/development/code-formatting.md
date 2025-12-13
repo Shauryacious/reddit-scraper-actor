@@ -2,6 +2,27 @@
 
 This document outlines the code formatting and quality standards enforced in this project.
 
+## ⚠️ Pre-Push Checklist (REQUIRED)
+
+**IMPORTANT:** Always run these commands before pushing code to avoid CI failures:
+
+```bash
+# 1. Format code with Black
+black src/ tests/
+
+# 2. Sort imports with isort
+isort src/ tests/
+
+# 3. Verify formatting (must pass before pushing)
+black --check src/ tests/
+isort --check-only src/ tests/
+
+# 4. Run tests
+pytest tests/ -v
+```
+
+**The CI pipeline will fail if these checks don't pass!** Never skip this step.
+
 ## Code Formatters
 
 The project uses automated code formatting tools to maintain consistent code style across the codebase.
@@ -89,7 +110,7 @@ mypy src/
 
 ## Pre-commit Checklist
 
-Before committing code, ensure:
+Before committing and pushing code, ensure:
 
 1. ✅ **Format code with Black:**
    ```bash
@@ -101,15 +122,23 @@ Before committing code, ensure:
    isort src/ tests/
    ```
 
-3. ✅ **Run linting:**
+3. ✅ **Verify formatting (CRITICAL - CI will fail if this doesn't pass):**
+   ```bash
+   black --check src/ tests/
+   isort --check-only src/ tests/
+   ```
+
+4. ✅ **Run linting:**
    ```bash
    flake8 src/ tests/
    ```
 
-4. ✅ **Run tests:**
+5. ✅ **Run tests:**
    ```bash
    pytest tests/ -v
    ```
+
+**Remember:** The CI pipeline runs `black --check` and `isort --check-only`. If these fail locally, they will fail in CI too!
 
 ## CI/CD Enforcement
 

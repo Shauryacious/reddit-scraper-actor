@@ -133,19 +133,25 @@ reddit-scraper-actor/
 
 ## 🧪 Running Tests Locally
 
-Before pushing, verify tests pass locally:
+### ⚠️ Pre-Push Checklist (REQUIRED)
+
+**Always run these commands before pushing to avoid CI failures:**
 
 ```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Format code (required before committing)
+# 1. Format code (REQUIRED - CI will fail without this)
 black src/ tests/
 
-# Sort imports (required before committing)
+# 2. Sort imports (REQUIRED - CI will fail without this)
 isort src/ tests/
 
-# Run all tests
+# 3. Verify formatting (must pass before pushing)
+black --check src/ tests/
+isort --check-only src/ tests/
+
+# 4. Run all tests
 pytest tests/ -v
 
 # Run with coverage

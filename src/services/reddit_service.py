@@ -9,12 +9,20 @@ from typing import Dict, List, Optional
 import aiohttp
 from apify import Actor
 
-from src.config import (DELAY_BETWEEN_SUBREDDITS_SECONDS,
-                        MAX_COMMENTS_PER_REQUEST, MAX_POSTS_PER_REQUEST,
-                        REDDIT_BASE_URL, REDDIT_USER_AGENT, VALID_SORT_OPTIONS,
-                        VALID_TIME_FILTERS)
-from src.utils.helpers import (clean_subreddit_name, normalize_comment_data,
-                               normalize_post_data)
+from src.config import (
+    DELAY_BETWEEN_SUBREDDITS_SECONDS,
+    MAX_COMMENTS_PER_REQUEST,
+    MAX_POSTS_PER_REQUEST,
+    REDDIT_BASE_URL,
+    REDDIT_USER_AGENT,
+    VALID_SORT_OPTIONS,
+    VALID_TIME_FILTERS,
+)
+from src.utils.helpers import (
+    clean_subreddit_name,
+    normalize_comment_data,
+    normalize_post_data,
+)
 
 
 class RedditService:

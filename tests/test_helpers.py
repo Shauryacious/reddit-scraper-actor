@@ -6,9 +6,13 @@ from datetime import datetime, timezone
 
 import pytest
 
-from src.utils.helpers import (clean_subreddit_name, format_timestamp,
-                               normalize_comment_data, normalize_post_data,
-                               validate_input)
+from src.utils.helpers import (
+    clean_subreddit_name,
+    format_timestamp,
+    normalize_comment_data,
+    normalize_post_data,
+    validate_input,
+)
 
 
 class TestCleanSubredditName:
