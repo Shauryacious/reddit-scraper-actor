@@ -22,7 +22,7 @@ jobs:
           node-version: '20'
 
       - name: Install Apify CLI
-        run: npm install -g @apify/cli
+        run: npm install -g apify-cli
 
       - name: Verify Apify CLI installation
         run: apify --version

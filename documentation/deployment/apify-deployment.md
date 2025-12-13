@@ -7,7 +7,7 @@ This guide walks you through deploying your Reddit Scraper Actor to the Apify pl
 Before deploying, ensure you have:
 
 1. ✅ **Apify Account** - Sign up at [apify.com](https://apify.com) if you haven't already
-2. ✅ **Apify CLI Installed** - Install globally: `npm install -g @apify/cli`
+2. ✅ **Apify CLI Installed** - Install globally: `npm install -g apify-cli`
 3. ✅ **Logged into Apify** - Run `apify login` to authenticate
 4. ✅ **Code Pushed to GitHub** - Your code is already on GitHub
 5. ✅ **Docker Image Built** - Your Docker image is on Docker Hub
