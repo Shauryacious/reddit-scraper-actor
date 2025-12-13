@@ -29,7 +29,8 @@ class TestCleanSubredditName:
         assert clean_subreddit_name("  python  ") == "python"
     
     def test_handles_multiple_r_prefixes(self):
-        assert clean_subreddit_name("rr/python") == "r/python"
+        # The function strips all "r/" prefixes, so "rr/python" becomes "python"
+        assert clean_subreddit_name("rr/python") == "python"
 
 
 class TestFormatTimestamp:

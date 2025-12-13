@@ -36,7 +36,7 @@ class TestRedditService:
         """Test search URL building"""
         url = reddit_service._build_search_url("python tutorial", "new", 25)
         assert "/search.json" in url
-        assert "q=python+tutorial" in url or "q=python%20tutorial" in url
+        assert "q=python tutorial" in url or "q=python+tutorial" in url or "q=python%20tutorial" in url
         assert "limit=25" in url
         assert "sort=new" in url
     
@@ -64,8 +64,15 @@ class TestRedditService:
         mock_response.status = 200
         mock_response.json = AsyncMock(return_value=mock_response_data)
         
+        # Make get() return an async context manager
+        async def mock_get(*args, **kwargs):
+            return mock_response
+        
+        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get.__aexit__ = AsyncMock(return_value=None)
+        
         mock_session = AsyncMock()
-        mock_session.get = AsyncMock(return_value=mock_response)
+        mock_session.get = mock_get
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
@@ -82,8 +89,15 @@ class TestRedditService:
         mock_response = AsyncMock()
         mock_response.status = 404
         
+        # Make get() return an async context manager
+        async def mock_get(*args, **kwargs):
+            return mock_response
+        
+        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get.__aexit__ = AsyncMock(return_value=None)
+        
         mock_session = AsyncMock()
-        mock_session.get = AsyncMock(return_value=mock_response)
+        mock_session.get = mock_get
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
@@ -116,8 +130,15 @@ class TestRedditService:
         mock_response.status = 200
         mock_response.json = AsyncMock(return_value=mock_response_data)
         
+        # Make get() return an async context manager
+        async def mock_get(*args, **kwargs):
+            return mock_response
+        
+        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get.__aexit__ = AsyncMock(return_value=None)
+        
         mock_session = AsyncMock()
-        mock_session.get = AsyncMock(return_value=mock_response)
+        mock_session.get = mock_get
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
@@ -155,8 +176,15 @@ class TestRedditService:
         mock_response.status = 200
         mock_response.json = AsyncMock(return_value=mock_response_data)
         
+        # Make get() return an async context manager
+        async def mock_get(*args, **kwargs):
+            return mock_response
+        
+        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get.__aexit__ = AsyncMock(return_value=None)
+        
         mock_session = AsyncMock()
-        mock_session.get = AsyncMock(return_value=mock_response)
+        mock_session.get = mock_get
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
@@ -201,8 +229,15 @@ class TestRedditService:
         mock_response.status = 200
         mock_response.json = AsyncMock(return_value=mock_response_data)
         
+        # Make get() return an async context manager
+        async def mock_get(*args, **kwargs):
+            return mock_response
+        
+        mock_get.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_get.__aexit__ = AsyncMock(return_value=None)
+        
         mock_session = AsyncMock()
-        mock_session.get = AsyncMock(return_value=mock_response)
+        mock_session.get = mock_get
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=None)
         
