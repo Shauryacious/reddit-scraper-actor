@@ -10,6 +10,8 @@ A powerful Apify actor that scrapes Reddit posts, comments, and threads from sub
 - ✅ **Comments Support** - Optionally scrape comments for each post
 - ✅ **Flexible Sorting** - Sort by new, hot, top, or rising
 - ✅ **Time Filters** - Filter top posts by time period (hour, day, week, month, year, all)
+- ✅ **CSV Export** - Automatic CSV export of scraped data in Apify format
+- ✅ **Output Schema** - Properly configured output schema for Apify Console display
 - ✅ **Challenge Compliant** - Reddit is allowed in the Apify $1M Challenge
 
 ## Input
@@ -52,7 +54,11 @@ Or with search:
 
 ## Output
 
-The actor outputs data to the default dataset. Each post includes:
+The actor outputs data in multiple formats:
+
+### 1. Dataset (JSON)
+
+Data is stored in the default Apify dataset. Each post includes:
 
 ```json
 {
@@ -88,6 +94,28 @@ The actor outputs data to the default dataset. Each post includes:
   ]
 }
 ```
+
+### 2. CSV Export
+
+The actor automatically generates CSV files in the key-value store:
+
+- **`reddit_scraper_output.csv`** - Always generated, contains all posts without comments
+- **`reddit_scraper_output_with_comments.csv`** - Generated when `includeComments` is `true`, contains posts with comments as separate rows
+
+CSV files are properly formatted with:
+- All post fields as columns
+- Proper CSV escaping for special characters
+- UTF-8 encoding
+- Comments as separate rows (when included) with post data repeated
+
+### 3. Output Schema
+
+The actor uses Apify's output schema configuration to display outputs in the Apify Console:
+- **Reddit Posts** - Link to dataset with all scraped posts
+- **CSV Export** - Link to posts-only CSV file
+- **CSV Export (with Comments)** - Link to CSV file with comments (when available)
+
+All outputs are accessible via the Apify Console Output tab and through the API.
 
 ## Usage Examples
 
@@ -177,7 +205,8 @@ reddit-scraper-actor/
 │   ├── api-reference/         # API documentation
 │   └── learnings/             # Development insights
 ├── .actor/
-│   └── actor.json             # Actor configuration
+│   ├── actor.json             # Actor configuration
+│   └── output_schema.json     # Output schema definition
 ├── input_schema.json          # Input schema
 ├── requirements.txt           # Python dependencies
 ├── Dockerfile                 # Docker configuration
